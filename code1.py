@@ -1,16 +1,20 @@
 import sys
 import random
 import time
+import os
 
 ## Constants
 nuc = ['A','G','T','C']
 freq = [0.25,0.25,0.25,0.25]
 filename='uniform_bg_ICPC_to_p.txt'
+sequence_filename='sequences.fa'
+site_filename='sites.txt'
+folder='dataset'
 
 def generate_seq(SL,freq):
 	seq=[]
-	random.seed(time.time())
 	for i in range(0,SL):
+		random.seed(time.time())
 		x=random.random()
 		if (x<freq[0]):
 			seq.append(nuc[0])
@@ -22,7 +26,17 @@ def generate_seq(SL,freq):
 			seq.append(nuc[3])
 	return ''.join(seq)
 
+
+def plant_motifs_in_seqs(seq_to_modify,motifs,ML,SL):
+	random.seed(time.time())
+	pos=random.randrange(0,SL-ML)
+	motif_num=random.randrange(0,SC)
+	new_seq=seq_to_modify[:pos]+motifs[motif_num]+seq_to_modify[pos+ML:]
+	return new_seq,pos
+	
+
 if __name__ == "__main__":
+
 	## Inputs
 	if (len(sys.argv)>0 and len(sys.argv)<5):
 		print "Command line usage: python benchmark.py <ICPC -- value [0,2] with maximum 2 significant digits> <ML -- positive integer> <SL -- postive integer> <SC --positive integer>"
@@ -42,13 +56,24 @@ if __name__ == "__main__":
 	sum_freq=sum(freq)
 	if sum_freq != 1:
 		raise Exception, 'Sum of frequency of nucleotides is not 1.'
+	if ML>SL:
+		raise Exception, 'Motif length is greater than sequence length.'
 	if (ICPC<0 or ICPC>2 or ML<=0 or SL<=0 or SC<=0 or len(str(ICPC))>4):
 		raise Exception, 'Incorrect input values.\n<ICPC -- value [0,2] with maximum 2 significant digits> <ML -- positive integer> <SL -- postive integer> <SC --positive integer>'
+
+	## Create dataset folder
+	dataset_folder=folder+'_'+str(ICPC)+'_'+str(ML)+'_'+str(SL)+'_'+str(SC)
+	cmd='rm -r '+dataset_folder
+	os.system(cmd)
+	cmd='mkdir '+dataset_folder
+	os.system(cmd)
+
 	## Generate SC random sequences of length SL and store in list, seqs
 	seqs=[]
 	for i in range(0,SC):
 		temp=generate_seq(SL,freq)
 		seqs.append(temp)		
+
 	## Read ICPC to p mapping
 	f=open(filename,'rb')
 	icpc_to_p=[]
@@ -60,14 +85,18 @@ if __name__ == "__main__":
 		temp=line.strip().split()
 		temp = [float(x) for x in temp]
 		icpc_to_p.append(temp)
+	f.close()
 	for i in range(0,len(icpc_to_p)):
 		if (ICPC==icpc_to_p[i][0]):
 			p=icpc_to_p[i][1]
 	q=(1-p)/3.0
-	## Generate a random motif
+
+	## Generate a random motif and write to file motif.txt
 	random_motif=generate_seq(ML,freq)
+	f_motif=open('./'+dataset_folder+'/motif.txt','wb')
+	f_motif.write('>'+random_motif+'\t'+str(ML)+'\n')
+
 	## Generate SC motifs of length ML
-#	A,G,T,C
 	motifs_temp=[]
 	for i in range(0,ML):
 		motif_freq=[q,q,q,q]
@@ -82,4 +111,36 @@ if __name__ == "__main__":
 		for j in range(0,ML):
 			temp.append(motifs_temp[j][i])
 		motifs.append(''.join(temp))
+	
+	## Writing PWM to motif.txt
+	for i in range(0,ML):
+		count=[0,0,0,0]
+	######
+	######	TO DO #######
+	######
+	######	
+
 	## Planting motifs in seqs
+	new_seq=[]
+	position=[]
+	for i in range(0,SC):
+		temp,pos=plant_motifs_in_seqs(seqs[i],motifs,ML,SL)
+		new_seq.append(temp)
+		position.append(pos)
+	
+	## Write new sequences to sequences.fa file
+	f=open('./'+dataset_folder+'/'+sequence_filename,'wb')
+	for i in range(0,SC):
+		f.write('>seq'+str(i+1)+'\n'+new_seq[i]+'\n')
+	f.close()
+
+	## Write plant positions to sites.fa file (these are indexed starting from 0)
+	f=open('./'+dataset_folder+'/'+site_filename,'wb')
+	for i in range(0,SC):
+		f.write(str(position[i])+'\n')
+	f.close()
+	
+	## Write motiflength
+	f=open('./'+dataset_folder+'/'+'motiflength.txt','wb')
+	f.write(str(ML))
+	f.close()

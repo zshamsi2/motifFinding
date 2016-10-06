@@ -25,7 +25,7 @@ def generate_seq(SL):
 if __name__ == "__main__":
 	## Inputs
 	if (len(sys.argv)>0 and len(sys.argv)<5):
-		print "Command line usage: python benchmark.py <ICPC> <ML> <SL> <SC>"
+		print "Command line usage: python benchmark.py <ICPC -- value [0,2] with maximum 2 significant digits> <ML -- positive integer> <SL -- postive integer> <SC --positive integer>"
 		print "Information content per column (ICPC):",
 		ICPC = float(raw_input())
 		print "motif lenght (ML):",
@@ -42,19 +42,13 @@ if __name__ == "__main__":
 	sum_freq=sum(freq)
 	if sum_freq != 1:
 		raise Exception, 'Sum of frequency of nucleotides is not 1.'
-	if (ICPC<=0 or ML<=0 or SL<=0 or SC<=0):
-		raise Exception, 'Incorrect input values.'
+	if (ICPC<0 or ICPC>2 or ML<=0 or SL<=0 or SC<=0 or len(str(ICPC))>4):
+		raise Exception, 'Incorrect input values.\n<ICPC -- value [0,2] with maximum 2 significant digits> <ML -- positive integer> <SL -- postive integer> <SC --positive integer>'
 	## Generate SC random sequences of length SL and store in list, seqs
 	seqs=[]
 	for i in range(0,SC):
 		temp=generate_seq(SL)
 		seqs.append(temp)		
-#	sum = [freq[i] for i in range(0,len(freq))]
-#	print ICPC
-#	print ML
-#	print SL
-#	print SC
-#	print seqs
 	## Read ICPC to p mapping
 	f=open(filename,'rb')
 	icpc_to_p=[]
@@ -66,4 +60,9 @@ if __name__ == "__main__":
 		temp=line.strip().split()
 		temp = [float(x) for x in temp]
 		icpc_to_p.append(temp)
-	
+	for i in range(0,len(icpc_to_p)):
+		if (ICPC==icpc_to_p[i][0]):
+			p=icpc_to_p[i][1]
+	q=(1-p)/3.0
+	## Generate motif
+	motif=generate_seq(ML)

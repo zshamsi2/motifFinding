@@ -113,7 +113,7 @@ if __name__ == "__main__":
 	
 	## Writing PWM to motif.txt
 	profile_matrix_tuples=[]
-	inverted_profile_matrix=[]
+	profile_matrix=[]
 	### Calculate profile matrix
 	for i in range(0,ML):
 		count=[0,0,0,0]
@@ -122,18 +122,13 @@ if __name__ == "__main__":
 				if (motifs[j][i]==nuc[k]):
 			#		print nuc[k],motifs[j][i]
 					count[k]=count[k]+1
-		inverted_profile_matrix.append(count)
-	profile_matrix_tuples=zip(*inverted_profile_matrix)
-	profile_matrix= [list(x) for x in profile_matrix_tuples]
-	#### PWM
-	PWM_unnorm=profile_matrix			
+		profile_matrix.append(count)
 	for i in range(0,len(profile_matrix)):
-		for j in range(0,len(profile_matrix[i])):
-			if (profile_matrix[i][j]==0):
-				PWM_unnorm[i][j]='inf'
-					
-			else:
-				PWM_unnorm[i][j]=math.log(profile_matrix[i][j],2)	
+		for j in range(0,len(profile_matrix[0])):
+			f_motif.write(str(profile_matrix[i][j])+'\t')
+		f_motif.write('\n')
+	f_motif.write('<')
+	f_motif.close()
 
 	## Planting motifs in seqs
 	new_seq=[]

@@ -7,7 +7,7 @@ nuc = ['A','G','T','C']
 freq = [0.25,0.25,0.25,0.25]
 filename='uniform_bg_ICPC_to_p.txt'
 
-def generate_seq(SL):
+def generate_seq(SL,freq):
 	seq=[]
 	random.seed(time.time())
 	for i in range(0,SL):
@@ -47,7 +47,7 @@ if __name__ == "__main__":
 	## Generate SC random sequences of length SL and store in list, seqs
 	seqs=[]
 	for i in range(0,SC):
-		temp=generate_seq(SL)
+		temp=generate_seq(SL,freq)
 		seqs.append(temp)		
 	## Read ICPC to p mapping
 	f=open(filename,'rb')
@@ -64,5 +64,22 @@ if __name__ == "__main__":
 		if (ICPC==icpc_to_p[i][0]):
 			p=icpc_to_p[i][1]
 	q=(1-p)/3.0
-	## Generate motif
-	motif=generate_seq(ML)
+	## Generate a random motif
+	random_motif=generate_seq(ML,freq)
+	## Generate SC motifs of length ML
+#	A,G,T,C
+	motifs_temp=[]
+	for i in range(0,ML):
+		motif_freq=[q,q,q,q]
+		for j in range(0,len(nuc)):
+			if(random_motif[i]==nuc[j]):
+				motif_freq[j]=p
+		temp=generate_seq(SC,motif_freq)
+		motifs_temp.append(temp)
+	motifs=[]
+	for i in range(0,SC):
+		temp=[]
+		for j in range(0,ML):
+			temp.append(motifs_temp[j][i])
+		motifs.append(''.join(temp))
+	## Planting motifs in seqs

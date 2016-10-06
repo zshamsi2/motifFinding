@@ -2,7 +2,6 @@ import sys
 import random
 import time
 import os
-import math
 
 ## Constants
 nuc = ['A','G','T','C']
@@ -120,9 +119,9 @@ if __name__ == "__main__":
 		for j in range(0,SC):
 			for k in range(0,len(nuc)):
 				if (motifs[j][i]==nuc[k]):
-			#		print nuc[k],motifs[j][i]
 					count[k]=count[k]+1
 		profile_matrix.append(count)
+	### Write profile matrix to motif.txt in the required file
 	for i in range(0,len(profile_matrix)):
 		for j in range(0,len(profile_matrix[0])):
 			f_motif.write(str(profile_matrix[i][j])+'\t')

@@ -62,9 +62,7 @@ if __name__ == "__main__":
 		raise Exception, 'Incorrect input values.\n<ICPC -- value [0,2] with maximum 2 significant digits> <ML -- positive integer> <SL -- postive integer> <SC --positive integer>'
 
 	## Create dataset folder
-	dataset_folder=folder+'_'+str(ICPC)+'_'+str(ML)+'_'+str(SL)+'_'+str(SC)
-	cmd='rm -r '+dataset_folder
-	os.system(cmd)
+	dataset_folder=folder
 	cmd='mkdir '+dataset_folder
 	os.system(cmd)
 
@@ -144,3 +142,4 @@ if __name__ == "__main__":
 	f=open('./'+dataset_folder+'/'+'motiflength.txt','wb')
 	f.write(str(ML))
 	f.close()
+	

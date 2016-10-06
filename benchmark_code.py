@@ -2,6 +2,7 @@ import sys
 import random
 import time
 import os
+import math
 
 ## Constants
 nuc = ['A','G','T','C']
@@ -111,12 +112,28 @@ if __name__ == "__main__":
 		motifs.append(''.join(temp))
 	
 	## Writing PWM to motif.txt
+	profile_matrix_tuples=[]
+	inverted_profile_matrix=[]
+	### Calculate profile matrix
 	for i in range(0,ML):
 		count=[0,0,0,0]
-	######
-	######	TO DO #######
-	######
-	######	
+		for j in range(0,SC):
+			for k in range(0,len(nuc)):
+				if (motifs[j][i]==nuc[k]):
+			#		print nuc[k],motifs[j][i]
+					count[k]=count[k]+1
+		inverted_profile_matrix.append(count)
+	profile_matrix_tuples=zip(*inverted_profile_matrix)
+	profile_matrix= [list(x) for x in profile_matrix_tuples]
+	#### PWM
+	PWM_unnorm=profile_matrix			
+	for i in range(0,len(profile_matrix)):
+		for j in range(0,len(profile_matrix[i])):
+			if (profile_matrix[i][j]==0):
+				PWM_unnorm[i][j]='inf'
+					
+			else:
+				PWM_unnorm[i][j]=math.log(profile_matrix[i][j],2)	
 
 	## Planting motifs in seqs
 	new_seq=[]
@@ -142,4 +159,4 @@ if __name__ == "__main__":
 	f=open('./'+dataset_folder+'/'+'motiflength.txt','wb')
 	f.write(str(ML))
 	f.close()
-	
+		

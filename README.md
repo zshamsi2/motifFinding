@@ -13,10 +13,11 @@ Gibbs sampling paper (for proteins): http://science.sciencemag.org/content/262/5
 
 ### Step 2 : Find motifs
 ```source motifFinderGibbsAlgo.sh```
-This program runns the gipps.py for all dataset* folders in the directory </br>
-The output generated is insite the datasets folders named gibbs_output </br>
+
+This program runs the gipps.py for all <b>dataset*</b> folders in the directory </br>
+The output generated is insite the datasets folders named <b>gibbs_output</b> </br>
 10 Runs have been carried out for each dataset, so that later proper analysis can be done </br>
-In addition to the predictedmotif.txt and predictedsites.txt (as required), an IC.npy file is generated which can be visualized using the following code as an example:
+In addition to the <b>predictedmotif.txt</b> and <b>predictedsites.txt</b> (as required), an <b>IC.npy</b> file is generated which can be visualized using the following code as an example:
 ```
 import numpy as np
 data1=np.load('gibbs_01_IC.npy')

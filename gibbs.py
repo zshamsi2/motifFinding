@@ -3,6 +3,7 @@ import time
 import numpy as np
 import math
 
+### Constants
 ITERATIONS=10000
 nuc = ['A','G','T','C']
 freq = [0.25,0.25,0.25,0.25]
@@ -29,6 +30,7 @@ def getPWM(sequences,N,W,L,sites):
 					PWM[3][j]+=1
 		count+=1
 	return PWM/(N-1),z
+
 
 def getOdds(PWM,z,sequences,W,L):
 	candidates_seq=[]
@@ -60,6 +62,7 @@ def getOdds(PWM,z,sequences,W,L):
 		x -= normed_odds[index]
 		index += 1
 	return index-1	## This is the position in the z sequence which is chosen proportional to the odds
+
 			
 def getIC(sites,sequences,W,N,old_PWM):
 	## Calculate new PWM
@@ -93,7 +96,10 @@ def getIC(sites,sequences,W,N,old_PWM):
 			IC+=PWM[j][i]*math.log(temp,2)
 	return IC,PWM
 
+
 if __name__ == "__main__":
+
+	## Read input files
 	f_motiflength=open('motiflength.txt','rb')
 	for line in f_motiflength:
 		W=int(line)	## motiflength
@@ -108,9 +114,11 @@ if __name__ == "__main__":
 			flag=0
 			sequences.append(line.strip('\n'))
 	f_sequences.close()	
+
 	N=len(sequences)	## Number of sequences
 	L=len(sequences[0])	## Length of sequences, assumed all are of same length)
 	info=[['IC'],['sites']]
+
 	## Select starting point, generate motif site for the N-1 sequences
 	sites=[]
 	random.seed(time)
@@ -119,6 +127,7 @@ if __name__ == "__main__":
 #		k=0	## Fix the starting point for all runs
 		sites.append(k)
 	flag=0
+
 	## Do multiple iterations
 	for ITER in range(0,ITERATIONS):
 		## Calculate PWM for N-1 sequences
@@ -136,12 +145,14 @@ if __name__ == "__main__":
 		IC,PWM=getIC(sites,sequences,W,N,PWM)
 		## Save information for analysis
 		info[0].append(IC)
+
 	## Writing to predictedsites.txt file
 	predicted_sites=info[1][info[0].index(max(info[0][1:]))]
 	f=open('predictedsites.txt','wb')
 	for i in range(0,len(predicted_sites)):
 		f.write(str(predicted_sites[i])+'\n')
 	f.close()
+
 	## Finding the motif
 	profile_matrix=np.transpose(PWM)*N
 	motif=[]
@@ -160,6 +171,8 @@ if __name__ == "__main__":
 		## Determine the motif based on the PWM
 		motif.append(nuc[indx])
 	finalmotif=''.join(motif)
+
+	## Writing to predictedmotif.txt file
 	f=open('predictedmotif.txt','wb')
 	f.write('>'+finalmotif+'\t'+str(len(finalmotif))+'\n')
 	for i in range(0,len(profile_matrix)):
@@ -168,3 +181,7 @@ if __name__ == "__main__":
 		f.write('\n')
 	f.write('<')
 	f.close()
+
+	## Data for plot
+	np.save('IC.npy',info[0][1:])
+	

@@ -3,7 +3,7 @@ import time
 import numpy as np
 import math
 
-ITERATIONS=3000
+ITERATIONS=10000
 nuc = ['A','G','T','C']
 freq = [0.25,0.25,0.25,0.25]
 
@@ -91,7 +91,7 @@ def getIC(sites,sequences,W,N,old_PWM):
 			if (temp==0):
 				continue;
 			IC+=PWM[j][i]*math.log(temp,2)
-	return IC
+	return IC,PWM
 
 if __name__ == "__main__":
 	f_motiflength=open('motiflength.txt','rb')
@@ -111,20 +111,20 @@ if __name__ == "__main__":
 	N=len(sequences)	## Number of sequences
 	L=len(sequences[0])	## Length of sequences, assumed all are of same length)
 	info=[['IC'],['sites']]
-	## Select starting point
-	## Generate motif site for the N-1 sequences
+	## Select starting point, generate motif site for the N-1 sequences
 	sites=[]
+	random.seed(time)
 	for i in range(0,N-1):
 		k=random.randrange(0,L-W)
+#		k=0	## Fix the starting point for all runs
 		sites.append(k)
 	flag=0
+	## Do multiple iterations
 	for ITER in range(0,ITERATIONS):
 		## Calculate PWM for N-1 sequences
 		PWM,z=getPWM(sequences,N,W,L,sites)
 		## Predict the site in the ignored sequence
 		z_site=getOdds(PWM,z,sequences,W,L)
-#		print z, z_site
-#		print sites
 		if (flag==0):
 			sites.insert(z,z_site)
 			flag=1
@@ -132,10 +132,39 @@ if __name__ == "__main__":
 			sites[z]=z_site
 		temp=sites[:]
 		info[1].append(temp)
-#		print info[1]
 		## Calculate information content in the current iteration prediction
-		IC=getIC(sites,sequences,W,N,PWM)
+		IC,PWM=getIC(sites,sequences,W,N,PWM)
 		## Save information for analysis
 		info[0].append(IC)
-#		print IC
-	print info[1][info[0].index(max(info[0][1:]))]
+	## Writing to predictedsites.txt file
+	predicted_sites=info[1][info[0].index(max(info[0][1:]))]
+	f=open('predictedsites.txt','wb')
+	for i in range(0,len(predicted_sites)):
+		f.write(str(predicted_sites[i])+'\n')
+	f.close()
+	## Finding the motif
+	profile_matrix=np.transpose(PWM)*N
+	motif=[]
+	for i in range(0,W):
+		temp=list(profile_matrix[i])
+		max_val=max(temp)
+		## check if the max_val occurs twice in the list i.e. two nucleotides may have equal probability of occurence
+		duplicate_indx=[]
+		for p in range(0,len(temp)):
+			if (temp[p]==max_val):
+				duplicate_indx.append(p)
+		if (len(duplicate_indx)>1): ## Means there are duplicates
+			indx=random.choice(duplicate_indx)
+		else:
+			indx=temp.index(max(temp))
+		## Determine the motif based on the PWM
+		motif.append(nuc[indx])
+	finalmotif=''.join(motif)
+	f=open('predictedmotif.txt','wb')
+	f.write('>'+finalmotif+'\t'+str(len(finalmotif))+'\n')
+	for i in range(0,len(profile_matrix)):
+		for j in range(0,len(profile_matrix[i])):
+			f.write(str(int(profile_matrix[i][j]))+'\t')
+		f.write('\n')
+	f.write('<')
+	f.close()

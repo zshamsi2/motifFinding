@@ -4,8 +4,8 @@ import numpy as np
 import math
 
 ### Constants
-ITERATIONS=100000
-acceptableIC=1.6
+ITERATIONS=1000000
+acceptableIC=1.7
 nuc = ['A','G','T','C']
 freq = [0.25,0.25,0.25,0.25]
 

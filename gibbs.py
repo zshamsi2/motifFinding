@@ -127,4 +127,4 @@ if __name__ == "__main__":
 		## Save information for analysis
 		info[0].append(IC)
 		info[1].append(sites)
-	info[1][info[0].index(max(info[0][1:]))]
+	print info[1][info[0].index(max(info[0][1:]))]

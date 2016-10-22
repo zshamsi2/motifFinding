@@ -4,7 +4,8 @@ import numpy as np
 import math
 
 ### Constants
-ITERATIONS=10000
+ITERATIONS=100000
+acceptableIC=1.6
 nuc = ['A','G','T','C']
 freq = [0.25,0.25,0.25,0.25]
 
@@ -54,14 +55,17 @@ def getOdds(PWM,z,sequences,W,L):
 				P*=freq[3]
 				Q*=PWM[3][j]
 		candidates_odds.append(Q/P)
-	normed_odds=candidates_odds/sum(candidates_odds)
-	random.seed(time.time())
-	x = random.random()
-	index = 0
-	while(x >= 0 and index 	< len(normed_odds)):
-		x -= normed_odds[index]
-		index += 1
-	return index-1	## This is the position in the z sequence which is chosen proportional to the odds
+	normed_odds=list(candidates_odds/sum(candidates_odds))
+	## Retun the max odds index
+	return normed_odds.index(max(normed_odds))
+	## Sample proportionally from the odds
+#	random.seed(time.time())
+#	x = random.random()
+#	index = 0
+#	while(x >= 0 and index 	< len(normed_odds)):
+#		x -= normed_odds[index]
+#		index += 1
+#	return index-1	## This is the position in the z sequence which is chosen proportional to the odds
 
 			
 def getIC(sites,sequences,W,N,old_PWM):
@@ -95,7 +99,7 @@ def getIC(sites,sequences,W,N,old_PWM):
 				continue;
 			IC+=PWM[j][i]*math.log(temp,2)
 	return IC,PWM
-
+	
 
 if __name__ == "__main__":
 
@@ -143,11 +147,17 @@ if __name__ == "__main__":
 		info[1].append(temp)
 		## Calculate information content in the current iteration prediction
 		IC,PWM=getIC(sites,sequences,W,N,PWM)
-		## Save information for analysis
 		info[0].append(IC)
+		if (IC>(acceptableIC*W)):
+			break;
+#		print IC
+		## Save information for analysis
+#		print PWM
+#		print
 
 	## Writing to predictedsites.txt file
-	predicted_sites=info[1][info[0].index(max(info[0][1:]))]
+#	predicted_sites=info[1][info[0].index(max(info[0][1:]))]
+	predicted_sites=info[1][-1]
 	f=open('predictedsites.txt','wb')
 	for i in range(0,len(predicted_sites)):
 		f.write(str(predicted_sites[i])+'\n')
@@ -171,7 +181,7 @@ if __name__ == "__main__":
 		## Determine the motif based on the PWM
 		motif.append(nuc[indx])
 	finalmotif=''.join(motif)
-
+	
 	## Writing to predictedmotif.txt file
 	f=open('predictedmotif.txt','wb')
 	f.write('>'+finalmotif+'\t'+str(len(finalmotif))+'\n')

@@ -3,19 +3,14 @@ import time
 import numpy as np
 import math
 
-ITERATIONS=2000
+ITERATIONS=3000
 nuc = ['A','G','T','C']
 freq = [0.25,0.25,0.25,0.25]
 
-def getPWM(sequences,N,W,L):
+def getPWM(sequences,N,W,L,sites):
 	## Generate random number from 0,SC for the sequence to be ignored
 	random.seed(time.time())
 	z=random.randrange(0,N)
-	## Generate motif site for the N-1 sequences
-	sites=[]
-	for i in range(0,N-1):
-		k=random.randrange(0,L-W)
-		sites.append(k)
 	## Calculate PWM
 	PWM=np.zeros((4,W))
 	count=0 ## count goes from 0,N-1
@@ -33,7 +28,7 @@ def getPWM(sequences,N,W,L):
 				elif (sequences[i][sites[count]+j]==nuc[3]):
 					PWM[3][j]+=1
 		count+=1
-	return PWM/(N-1),z,sites
+	return PWM/(N-1),z
 
 def getOdds(PWM,z,sequences,W,L):
 	candidates_seq=[]
@@ -96,7 +91,7 @@ def getIC(sites,sequences,W,N,old_PWM):
 			if (temp==0):
 				continue;
 			IC+=PWM[j][i]*math.log(temp,2)
-	return IC,PWM
+	return IC
 
 if __name__ == "__main__":
 	f_motiflength=open('motiflength.txt','rb')
@@ -116,15 +111,31 @@ if __name__ == "__main__":
 	N=len(sequences)	## Number of sequences
 	L=len(sequences[0])	## Length of sequences, assumed all are of same length)
 	info=[['IC'],['sites']]
+	## Select starting point
+	## Generate motif site for the N-1 sequences
+	sites=[]
+	for i in range(0,N-1):
+		k=random.randrange(0,L-W)
+		sites.append(k)
+	flag=0
 	for ITER in range(0,ITERATIONS):
 		## Calculate PWM for N-1 sequences
-		PWM,z,sites=getPWM(sequences,N,W,L)
+		PWM,z=getPWM(sequences,N,W,L,sites)
 		## Predict the site in the ignored sequence
 		z_site=getOdds(PWM,z,sequences,W,L)
-		sites.insert(z,z_site)
+#		print z, z_site
+#		print sites
+		if (flag==0):
+			sites.insert(z,z_site)
+			flag=1
+		else:
+			sites[z]=z_site
+		temp=sites[:]
+		info[1].append(temp)
+#		print info[1]
 		## Calculate information content in the current iteration prediction
-		IC,PWM=getIC(sites,sequences,W,N,PWM)
+		IC=getIC(sites,sequences,W,N,PWM)
 		## Save information for analysis
 		info[0].append(IC)
-		info[1].append(sites)
+#		print IC
 	print info[1][info[0].index(max(info[0][1:]))]

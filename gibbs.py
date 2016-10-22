@@ -58,14 +58,14 @@ def getOdds(PWM,z,sequences,W,L):
 	normed_odds=list(candidates_odds/sum(candidates_odds))
 	## Retun the max odds index
 	return normed_odds.index(max(normed_odds))
-	## Sample proportionally from the odds
+	## Return an index sampled proportionally from the odds (takes longer run-time)
 #	random.seed(time.time())
 #	x = random.random()
 #	index = 0
 #	while(x >= 0 and index 	< len(normed_odds)):
 #		x -= normed_odds[index]
 #		index += 1
-#	return index-1	## This is the position in the z sequence which is chosen proportional to the odds
+#	return index-1
 
 			
 def getIC(sites,sequences,W,N,old_PWM):
@@ -147,16 +147,12 @@ if __name__ == "__main__":
 		info[1].append(temp)
 		## Calculate information content in the current iteration prediction
 		IC,PWM=getIC(sites,sequences,W,N,PWM)
+		## Save information for analysis
 		info[0].append(IC)
 		if (IC>(acceptableIC*W)):
 			break;
-#		print IC
-		## Save information for analysis
-#		print PWM
-#		print
 
 	## Writing to predictedsites.txt file
-#	predicted_sites=info[1][info[0].index(max(info[0][1:]))]
 	predicted_sites=info[1][-1]
 	f=open('predictedsites.txt','wb')
 	for i in range(0,len(predicted_sites)):
@@ -193,5 +189,6 @@ if __name__ == "__main__":
 	f.close()
 
 	## Data for plot
+	## x-axis can be Number of Rounds and y-axis is Information Content (per bit, or per letter in the motif)
 	np.save('IC.npy',info[0][1:])
 	

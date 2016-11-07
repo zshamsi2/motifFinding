@@ -17,7 +17,7 @@ for icpc in {1,1.5};
 do	
 	for i in {1..10};
 	do
-		python benchmark_code.py $icpc $ML_def $SL_def $SC_def
+		python generateData.py $icpc $ML_def $SL_def $SC_def
 		mv dataset dataset_${icpc}_${ML_def}_${SL_def}_${SC_def}_${i}
 	done
 done
@@ -26,7 +26,7 @@ for ml in {6,7};
 do	
 	for i in {1..10};
 	do
-		python benchmark_code.py $ICPC_def $ml $SL_def $SC_def
+		python generateData.py $ICPC_def $ml $SL_def $SC_def
 		mv dataset dataset_${ICPC_def}_${ml}_${SL_def}_${SC_def}_${i}
 	done
 done
@@ -35,7 +35,7 @@ for sc in {5,10,20};
 do	
 	for i in {1..10};
 	do
-		python benchmark_code.py $ICPC_def $ML_def $SL_def $sc
+		python generateData.py $ICPC_def $ML_def $SL_def $sc
 		mv dataset dataset_${ICPC_def}_${ML_def}_${SL_def}_${sc}_${i}
 	done
 done

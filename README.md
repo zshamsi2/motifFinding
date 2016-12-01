@@ -7,8 +7,7 @@ Gibbs sampling paper (for proteins): http://science.sciencemag.org/content/262/5
 ### Step 1 : Generate datasets
 ```python generateData.py```
 
-#### OR 
-#### to create all datasets asked in the requirements,
+Or, to create all datasets asked in the requirements, </br>
 ```source generateDatasets.sh```
 
 ### Step 2 : Find motifs

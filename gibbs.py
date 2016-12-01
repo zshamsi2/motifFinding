@@ -9,7 +9,7 @@ import numpy as np
 import math
 
 ### Constants
-ITERATIONS=10000
+ITERATIONS=100000
 acceptableIC=1.7
 nuc = ['A','C','G','T']
 freq = [0.25,0.25,0.25,0.25]
@@ -157,12 +157,10 @@ if __name__ == "__main__":
 		## Save information for analysis
 		info[0].append(IC)
 		if IC>maxIC:
-#			print IC, maxIC
 			maxIC=IC
 			maxPWM=PWM
 		if (IC>(acceptableIC*W)):
 			break;
-
 	IC=maxIC
 	PWM=maxPWM
 
@@ -204,4 +202,8 @@ if __name__ == "__main__":
 
 	## Data for plot
 	## x-axis can be Number of Rounds and y-axis is Information Content (per bit, or per letter in the motif)
+	for i in range(1,len(info[0])):
+		info[0][i]=info[0][i]/W
+
 	np.save('IC.npy',info[0][1:])
+	

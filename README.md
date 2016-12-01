@@ -16,7 +16,10 @@ Or, to create all datasets asked in the requirements, </br>
 This program runs the gipps.py for all <b>dataset*</b> folders in the directory </br>
 The output generated is insite the datasets folders named <b>gibbs_output</b> </br>
 10 Runs have been carried out for each dataset, so that later proper analysis can be done </br>
+
+### Step 3 : Analysis
 In addition to the <b>predictedmotif.txt</b> and <b>predictedsites.txt</b> (as required), an <b>IC.npy</b> file is generated which can be visualized using the following code as an example:
+
 ```
 import numpy as np
 data1=np.load('gibbs_01_IC.npy')

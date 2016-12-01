@@ -1,3 +1,8 @@
+"""
+	Generate dataset for CSS 466 motif finding project 
+	Team members: Shriyaa Mittal, Zahra Shamsi and Melanie Paige Muller
+"""
+
 import sys
 import random
 import time

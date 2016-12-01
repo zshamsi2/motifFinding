@@ -4,7 +4,7 @@ import time
 import os
 
 ## Constants
-nuc = ['A','G','T','C']
+nuc = ['A','C','G','T']
 freq = [0.25,0.25,0.25,0.25]
 filename='uniform_bg_ICPC_to_p.txt'
 sequence_filename='sequences.fa'
